@@ -14,11 +14,11 @@ Data::ClearSilver::HDF - Convert from Perl Data Structure to ClearSilver HDF
 
 =head1 VERSION
 
-version 0.01
+version 0.02
 
 =cut
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 =head1 SYNOPSIS
 
@@ -36,12 +36,23 @@ our $VERSION = '0.01';
 
   print $hdf->getValue("obj.foo", undef); # xxx
 
+=head1 PROPERTIES
+
+=head2 $USE_SORT
+
+Sorting each keys hieralcally. default false;
+
+=cut
+
+our $USE_SORT = 0;
+
 =head1 METHODS
 
 =head2 hdf($data)
 
 The argument $data must be reference.
 In the data, all of value excluded ARRAY, HASH, blessed reference will be ignored.
+
 Blessed reference will be unblessed by L<Data::Structure::Util>'s unbless functon.
 
 =cut
@@ -61,11 +72,17 @@ sub hdf {
     else {
         my $method = "hdf_" . lc($data_type);
         $class->$method( $hdf, undef, $data );
+
+        _hdf_walk($hdf) if ($USE_SORT);
+
         return $hdf;
     }
 }
 
 =head2 hdf_dump($hdf)
+
+Dump as string from ClearSilver::HDF object.
+This method will create temporary file.
 
 =cut
 
@@ -80,6 +97,9 @@ sub hdf_dump {
 
 =head2 hdf_scalar($hdf, $keys, $data)
 
+Translate scalar data to hdf.
+Please don't call directory.
+
 =cut
 
 sub hdf_scalar {
@@ -89,6 +109,9 @@ sub hdf_scalar {
 }
 
 =head2 hdf_array($hdf, $keys, $data)
+
+Translate array reference data to hdf.
+Please don't call directory.
 
 =cut
 
@@ -123,6 +146,9 @@ sub hdf_array {
 
 =head2 hdf_hash($hdf, $keys, $data)
 
+Translate hash reference data to hdf.
+Please don't call directory.
+
 =cut
 
 sub hdf_hash {
@@ -150,6 +176,43 @@ sub hdf_hash {
         }
     }
 }
+
+### private method
+
+sub _hdf_walk {
+    my $hdf = shift;
+    $hdf->sortObj("_hdf_sort");
+    my $child = $hdf->objChild;
+    _hdf_walk($child) if ($child);
+    my $next = $hdf->objNext;
+    _hdf_walk($next) if ($next);
+}
+
+sub _hdf_sort {
+    my ($a, $b) = @_;
+
+    return $a->objName cmp $b->objName;
+}
+
+=head1 SEE ALSO
+
+=over 4
+
+=item http://www.clearsilver.net/
+
+This module requires ClearSilver and ClearSilver's perl binding.
+
+=item http://www.clearsilver.net/docs/perl/
+
+ClearSilver perl binding documentation.
+
+=item L<Data::Structure::Util>
+
+=item L<File::Slurp>
+
+=item L<File::Temp>
+
+=back
 
 =head1 AUTHOR
 

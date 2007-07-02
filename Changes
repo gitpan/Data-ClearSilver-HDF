@@ -1,5 +1,9 @@
 Revision history for Data-ClearSilver-HDF
 
-0.01   2007-06-28 20:33
-       First version
+0.02    2007-07-02 19:00
+         * Add few tests
+         * Add cspage command
+
+0.01    2007-06-28 20:33
+         * First version
 

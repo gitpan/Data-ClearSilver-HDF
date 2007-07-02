@@ -1,4 +1,6 @@
+bin/cspage
 Changes
+inc/Class/Accessor/Fast.pm
 inc/Module/AutoInstall.pm
 inc/Module/Install.pm
 inc/Module/Install/AutoInstall.pm
@@ -8,6 +10,7 @@ inc/Module/Install/Fetch.pm
 inc/Module/Install/Include.pm
 inc/Module/Install/Makefile.pm
 inc/Module/Install/Metadata.pm
+inc/Module/Install/Scripts.pm
 inc/Module/Install/TestBase.pm
 inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
@@ -24,5 +27,10 @@ MANIFEST.SKIP
 META.yml
 README
 t/00-load.t
+t/01-array.t
+t/02-hash.t
+t/03-complex.t
 t/pod-coverage.t
 t/pod.t
+test.cs
+test.hdf

@@ -76,8 +76,7 @@ cspage [options] [file.cs]
    --input-hdf filename      Load from hdf file.
 
  See also:
-   perldoc Catalyst::Manual
-   perldoc Catalyst::Manual::Intro
+   perldoc Data::ClearSilver::HDF
 
 =head1 DESCRIPTION
 

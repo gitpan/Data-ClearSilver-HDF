@@ -14,11 +14,11 @@ Data::ClearSilver::HDF - Convert from Perl Data Structure to ClearSilver HDF
 
 =head1 VERSION
 
-version 0.03
+version 0.04
 
 =cut
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 =head1 SYNOPSIS
 
@@ -72,9 +72,7 @@ sub hdf {
     else {
         my $method = "hdf_" . lc($data_type);
         $class->$method( $hdf, undef, $data );
-
         _hdf_walk($hdf) if ($USE_SORT);
-
         return $hdf;
     }
 }
@@ -87,12 +85,12 @@ This method will create temporary file.
 =cut
 
 sub hdf_dump {
-    my ($class, $hdf) = @_;
+    my ( $class, $hdf ) = @_;
 
     my $fh = File::Temp->new;
-    $hdf->writeFile($fh->filename);
+    $hdf->writeFile( $fh->filename );
 
-    return slurp($fh->filename);
+    return slurp( $fh->filename );
 }
 
 =head2 hdf_scalar($hdf, $keys, $data)
@@ -103,9 +101,9 @@ Please don't call directory.
 =cut
 
 sub hdf_scalar {
-    my ($class, $hdf, $keys, $data) = @_;
+    my ( $class, $hdf, $keys, $data ) = @_;
 
-    $hdf->setValue(join(".", @$keys), $data);
+    $hdf->setValue( join( ".", @$keys ), $data );
 }
 
 =head2 hdf_array($hdf, $keys, $data)
@@ -116,25 +114,25 @@ Please don't call directory.
 =cut
 
 sub hdf_array {
-    my ($class, $hdf, $keys, $data) = @_;
+    my ( $class, $hdf, $keys, $data ) = @_;
 
     $keys ||= [];
     my $idx = 0;
 
     for my $value (@$data) {
-        my @keys = @$keys;
+        my @keys      = @$keys;
         my $value_ref = ref $value;
 
-        push(@keys, $idx);
+        push( @keys, $idx );
 
-        unless ($value_ref) {
-            $class->hdf_scalar($hdf, \@keys, $value);
+        unless ( defined $value && $value_ref ) {
+            $class->hdf_scalar( $hdf, \@keys, $value );
         }
-        elsif ($value_ref eq "ARRAY") {
-            $class->hdf_array($hdf, \@keys, $value);
+        elsif ( $value_ref eq "ARRAY" ) {
+            $class->hdf_array( $hdf, \@keys, $value );
         }
-        elsif ($value_ref eq "HASH") {
-            $class->hdf_hash($hdf, \@keys, $value);
+        elsif ( $value_ref eq "HASH" ) {
+            $class->hdf_hash( $hdf, \@keys, $value );
         }
         else {
             next;
@@ -162,17 +160,17 @@ sub hdf_hash {
 
         push( @keys, $key );
 
-        unless ($value_ref) { 
-            $class->hdf_scalar( $hdf, \@keys, $value ); 
+        unless ( defined $value && $value_ref ) {
+            $class->hdf_scalar( $hdf, \@keys, $value );
         }
         elsif ( $value_ref eq "ARRAY" ) {
             $class->hdf_array( $hdf, \@keys, $value );
         }
-        elsif ( $value_ref eq "HASH" ) { 
-            $class->hdf_hash( $hdf, \@keys, $value ); 
+        elsif ( $value_ref eq "HASH" ) {
+            $class->hdf_hash( $hdf, \@keys, $value );
         }
-        else { 
-            next; 
+        else {
+            next;
         }
     }
 }
@@ -189,7 +187,7 @@ sub _hdf_walk {
 }
 
 sub _hdf_sort {
-    my ($a, $b) = @_;
+    my ( $a, $b ) = @_;
 
     return $a->objName cmp $b->objName;
 }

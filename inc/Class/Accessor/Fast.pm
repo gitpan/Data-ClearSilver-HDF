@@ -2,7 +2,7 @@
 package Class::Accessor::Fast;
 use base 'Class::Accessor';
 use strict;
-$Class::Accessor::Fast::VERSION = '0.30';
+$Class::Accessor::Fast::VERSION = '0.31';
 
 #line 32
 
@@ -10,9 +10,9 @@ sub make_accessor {
     my($class, $field) = @_;
 
     return sub {
-        return $_[0]->{$field} unless @_ > 1;
-        my $self = shift;
-        $self->{$field} = (@_ == 1 ? $_[0] : [@_]);
+        return $_[0]->{$field} if @_ == 1;
+        return $_[0]->{$field} = $_[1] if @_ == 2;
+        return (shift)->{$field} = \@_;
     };
 }
 
@@ -21,10 +21,9 @@ sub make_ro_accessor {
     my($class, $field) = @_;
 
     return sub {
-        return $_[0]->{$field} unless @_ > 1;
-        my $self = shift;
+        return $_[0]->{$field} if @_ == 1;
         my $caller = caller;
-        $self->_croak("'$caller' cannot alter the value of '$field' on objects of class '$class'");
+        $_[0]->_croak("'$caller' cannot alter the value of '$field' on objects of class '$class'");
     };
 }
 
@@ -33,19 +32,18 @@ sub make_wo_accessor {
     my($class, $field) = @_;
 
     return sub {
-        my $self = shift;
-
-        unless (@_) {
+        if (@_ == 1) {
             my $caller = caller;
-            $self->_croak("'$caller' cannot access the value of '$field' on objects of class '$class'");
+            $_[0]->_croak("'$caller' cannot access the value of '$field' on objects of class '$class'");
         }
         else {
-            return $self->{$field} = (@_ == 1 ? $_[0] : [@_]);
+            return $_[0]->{$field} = $_[1] if @_ == 2;
+            return (shift)->{$field} = \@_;
         }
     };
 }
 
 
-#line 94
+#line 92
 
 1;
